@@ -1,0 +1,7 @@
+{
+  "name": "CareWay India - Toilet & Baby Care Finder",
+  "description": "A minimalist and functional app for finding toilets, wheelchair accessible facilities, and baby care rooms across India with real-time navigation and cleanliness ratings.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
