@@ -16,14 +16,13 @@ const DetailModal: React.FC<DetailModalProps> = ({ facility, appMode, onClose })
   const [reviewText, setReviewText] = useState('');
   const [localReviews, setLocalReviews] = useState<Review[]>(facility.reviews || []);
   
-  // Reporting state
   const [isReporting, setIsReporting] = useState(false);
   const [reportCategory, setReportCategory] = useState<ReportCategory | ''>('');
   const [reportDetails, setReportDetails] = useState('');
   const [reportSubmitted, setReportSubmitted] = useState(false);
 
   const accentColor = appMode === AppMode.TOILET ? 'indigo' : 'pink';
-  const isRestaurant = facility.type === 'Restaurant' || facility.type === 'Eatery' || facility.type === 'Coffee Shop';
+  const isCommercial = ['Restaurant', 'Hotel', 'Coffee Shop', 'Retail', 'Eatery'].includes(facility.type);
   const isPark = facility.type === 'Park';
 
   const handleNavigate = () => {
@@ -49,8 +48,6 @@ const DetailModal: React.FC<DetailModalProps> = ({ facility, appMode, onClose })
 
   const handleSubmitReport = () => {
     if (!reportCategory) return;
-    // Simulate API call
-    console.log('Report submitted:', { category: reportCategory, details: reportDetails, facilityId: facility.id });
     setReportSubmitted(true);
     setTimeout(() => {
       setIsReporting(false);
@@ -59,8 +56,6 @@ const DetailModal: React.FC<DetailModalProps> = ({ facility, appMode, onClose })
       setReportDetails('');
     }, 3000);
   };
-
-  const isHighlyClean = facility.cleanlinessRating >= 4.0;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center p-0 sm:p-4">
@@ -83,10 +78,10 @@ const DetailModal: React.FC<DetailModalProps> = ({ facility, appMode, onClose })
                 <span className="text-[10px] font-black text-white uppercase tracking-widest">On Road</span>
               </div>
             )}
-            {isHighlyClean && (
-              <div className="bg-emerald-600/90 backdrop-blur px-3 py-1.5 rounded-full border border-emerald-400 shadow-lg flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-sm text-white">sparkles</span>
-                <span className="text-[10px] font-black text-white uppercase tracking-widest">Recently Cleaned</span>
+            {isCommercial && (
+              <div className="bg-amber-600/90 backdrop-blur px-3 py-1.5 rounded-full border border-amber-400 shadow-lg flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-sm text-white">lock_person</span>
+                <span className="text-[10px] font-black text-white uppercase tracking-widest">Customer Only</span>
               </div>
             )}
           </div>
@@ -96,7 +91,7 @@ const DetailModal: React.FC<DetailModalProps> = ({ facility, appMode, onClose })
         <div className="p-6 overflow-y-auto no-scrollbar flex-1">
           <div className="flex justify-between items-start mb-2">
             <div className="flex-1">
-              <span className={`text-[10px] font-bold tracking-widest uppercase ${isRestaurant ? 'text-emerald-500' : isPark ? 'text-emerald-600' : `text-${accentColor}-500`}`}>
+              <span className={`text-[10px] font-bold tracking-widest uppercase ${isCommercial ? 'text-amber-600' : isPark ? 'text-emerald-600' : `text-${accentColor}-500`}`}>
                 {facility.type} {facility.floor ? `• ${facility.floor}` : ''}
               </span>
               <h2 className="text-xl font-bold text-gray-900 leading-tight">{facility.name}</h2>
@@ -118,8 +113,11 @@ const DetailModal: React.FC<DetailModalProps> = ({ facility, appMode, onClose })
           </div>
 
           <p className="text-sm text-gray-500 mb-2">{facility.address}</p>
-          {facility.locationDetails && (
-            <p className="text-xs text-slate-400 italic mb-1">Located: {facility.locationDetails}</p>
+          {isCommercial && (
+            <div className="mb-4 flex items-center gap-2 p-3 bg-amber-50 rounded-2xl border border-amber-100">
+               <span className="material-symbols-outlined text-amber-600 text-lg">info</span>
+               <p className="text-[11px] font-medium text-amber-800">This restroom is inside a commercial establishment. Access may be restricted to paying customers.</p>
+            </div>
           )}
 
           <div className="flex items-center gap-4 mb-6">
@@ -129,7 +127,7 @@ const DetailModal: React.FC<DetailModalProps> = ({ facility, appMode, onClose })
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-[10px] font-black text-blue-600 uppercase tracking-widest hover:underline"
             >
-              <MapIcon className="w-3 h-3" /> Verified on Maps
+              <MapIcon className="w-3 h-3" /> View on Maps
             </a>
             <button 
               onClick={() => setIsReporting(true)}
@@ -139,7 +137,6 @@ const DetailModal: React.FC<DetailModalProps> = ({ facility, appMode, onClose })
             </button>
           </div>
 
-          {/* Report Form Overlay (Minimalist In-place) */}
           {isReporting && (
             <div className={`mb-8 p-6 rounded-[2rem] bg-rose-50 border border-rose-100 animate-in fade-in zoom-in duration-200`}>
               {reportSubmitted ? (
@@ -189,54 +186,20 @@ const DetailModal: React.FC<DetailModalProps> = ({ facility, appMode, onClose })
             </div>
           )}
 
-          {/* Detailed Route Insight */}
-          {typeof facility.diversionDistance !== 'undefined' && (
-            <div className={`mb-6 p-4 rounded-3xl border flex items-center justify-between transition-all ${
-              facility.diversionDistance === 0 
-                ? 'bg-blue-50 border-blue-100 shadow-sm' 
-                : 'bg-amber-50 border-amber-100 shadow-sm'
-            }`}>
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${
-                  facility.diversionDistance === 0 ? 'bg-blue-500 text-white shadow-lg' : 'bg-amber-500 text-white shadow-lg'
-                }`}>
-                  <RoadIcon className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="text-[11px] font-black uppercase tracking-tight text-gray-900">
-                    {facility.diversionDistance === 0 ? 'Directly on main road' : `Small ${facility.diversionDistance} KM Turn`}
-                  </h4>
-                  <p className="text-[10px] text-gray-500 font-medium">
-                    {facility.diversionDistance === 0 
-                      ? 'No detour needed for walkers/drivers' 
-                      : `Exit main route for a quick pitstop`}
-                  </p>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className={`text-[10px] font-black ${
-                  facility.diversionDistance === 0 ? 'text-blue-600' : 'text-amber-600'
-                } uppercase tracking-widest`}>
-                  {facility.diversionDistance === 0 ? 'PERFECT' : 'DETOUR'}
-                </span>
-              </div>
-            </div>
-          )}
-
           <div className="grid grid-cols-3 gap-3 mb-8">
             <div className="bg-gray-50 p-4 rounded-3xl flex flex-col items-center border border-gray-100">
               <span className="text-lg font-bold text-gray-800">
-                {facility.isFree ? 'Free' : (isRestaurant ? 'Cust.' : '₹5-10')}
+                {facility.isFree ? 'Free' : (isCommercial ? 'Cust.' : '₹5-10')}
               </span>
               <span className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">Usage</span>
             </div>
             <div className="bg-gray-50 p-4 rounded-3xl flex flex-col items-center border border-gray-100">
-              <span className="text-lg font-bold text-green-600">{facility.cleanlinessRating}</span>
-              <span className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">Hygiene</span>
+              <span className="text-lg font-bold text-gray-800">{facility.distance}</span>
+              <span className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">KM</span>
             </div>
             <div className="bg-gray-50 p-4 rounded-3xl flex flex-col items-center border border-gray-100">
-               <span className="text-lg font-bold text-gray-800">{facility.distance}</span>
-               <span className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">KM</span>
+               <span className="text-lg font-bold text-amber-600">{facility.rating}</span>
+               <span className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">User Score</span>
             </div>
           </div>
 
@@ -276,9 +239,8 @@ const DetailModal: React.FC<DetailModalProps> = ({ facility, appMode, onClose })
             </div>
           </div>
 
-          {/* Review Section */}
           <div className="mt-8 border-t border-gray-100 pt-8">
-            <h3 className="text-lg font-bold text-gray-900 mb-6">User Experiences</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-6">User Reviews</h3>
             
             <div className="space-y-6 mb-8">
               {localReviews.map((review) => (
@@ -297,7 +259,6 @@ const DetailModal: React.FC<DetailModalProps> = ({ facility, appMode, onClose })
               ))}
             </div>
 
-            {/* Post Review Form */}
             <div className={`bg-${accentColor}-50/50 p-6 rounded-[2rem] border border-${accentColor}-100`}>
               <h4 className="text-sm font-bold text-gray-900 mb-4">Rate your visit</h4>
               <div className="flex gap-2 mb-4">
@@ -310,7 +271,7 @@ const DetailModal: React.FC<DetailModalProps> = ({ facility, appMode, onClose })
               <textarea 
                 value={reviewText}
                 onChange={(e) => setReviewText(e.target.value)}
-                placeholder="How was the hygiene and accessibility?"
+                placeholder="Rate hygiene and access..."
                 className="w-full bg-white border border-gray-100 rounded-2xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-4 min-h-[100px]"
               />
               <button 
@@ -323,7 +284,6 @@ const DetailModal: React.FC<DetailModalProps> = ({ facility, appMode, onClose })
           </div>
         </div>
 
-        {/* Footer Action */}
         <div className="p-6 bg-white border-t border-gray-100 flex-shrink-0">
           <button 
             onClick={handleNavigate}

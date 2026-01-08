@@ -13,7 +13,6 @@ const MapView: React.FC<MapViewProps> = ({ facilities, appMode, onSelectFacility
   const [activeMarker, setActiveMarker] = useState<string | null>(null);
   const accentColor = appMode === AppMode.TOILET ? 'indigo' : 'pink';
 
-  // Sort facilities to put the active one on top
   const sortedFacilities = [...facilities].sort((a, b) => {
     if (a.id === activeMarker) return 1;
     if (b.id === activeMarker) return -1;
@@ -24,7 +23,6 @@ const MapView: React.FC<MapViewProps> = ({ facilities, appMode, onSelectFacility
 
   return (
     <div className="relative w-full h-full bg-[#f0f4f8] overflow-hidden rounded-[2.5rem] border border-gray-100 shadow-inner group">
-      {/* Stylized Map Background (Simulated) */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -33,16 +31,13 @@ const MapView: React.FC<MapViewProps> = ({ facilities, appMode, onSelectFacility
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#grid)" />
-          {/* Simulated Roads */}
           <path d="M-100,200 Q400,150 1000,300" stroke="#cbd5e1" strokeWidth="40" fill="none" />
           <path d="M200,-100 Q150,400 300,1000" stroke="#cbd5e1" strokeWidth="30" fill="none" />
         </svg>
       </div>
 
-      {/* Map Markers */}
       <div className="relative w-full h-[60vh]">
-        {sortedFacilities.map((f, idx) => {
-          // Spread markers realistically across the visual plane
+        {sortedFacilities.map((f) => {
           const x = 20 + (parseInt(f.id) * 23) % 60;
           const y = 20 + (parseInt(f.id) * 17) % 60;
           const isActive = activeMarker === f.id;
@@ -56,7 +51,6 @@ const MapView: React.FC<MapViewProps> = ({ facilities, appMode, onSelectFacility
               }`}
               style={{ left: `${x}%`, top: `${y}%` }}
             >
-              {/* Marker Shape */}
               <div className="relative">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-xl border-4 border-white transition-colors duration-300 ${
                   isActive ? `bg-${accentColor}-600` : `bg-${accentColor}-400`
@@ -66,13 +60,10 @@ const MapView: React.FC<MapViewProps> = ({ facilities, appMode, onSelectFacility
                     <BabyIcon className="w-5 h-5 text-white" />
                   }
                 </div>
-                {/* Marker Point */}
                 <div className={`absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 border-r-4 border-b-4 border-white transition-colors duration-300 ${
                   isActive ? `bg-${accentColor}-600` : `bg-${accentColor}-400`
                 }`} />
               </div>
-              
-              {/* Distance Tag (Only if active or nearby) */}
               <div className={`absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-white/90 backdrop-blur px-2 py-0.5 rounded-full text-[9px] font-black text-${accentColor}-600 shadow-sm border border-gray-100 transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`}>
                 {f.distance} KM
               </div>
@@ -80,7 +71,6 @@ const MapView: React.FC<MapViewProps> = ({ facilities, appMode, onSelectFacility
           );
         })}
 
-        {/* User Location Pulse */}
         <div className="absolute left-[45%] top-[70%] z-20">
           <div className="relative flex items-center justify-center">
             <div className="absolute w-8 h-8 bg-blue-500/20 rounded-full animate-ping" />
@@ -89,7 +79,6 @@ const MapView: React.FC<MapViewProps> = ({ facilities, appMode, onSelectFacility
         </div>
       </div>
 
-      {/* Floating Controls */}
       <div className="absolute top-6 right-6 flex flex-col gap-3">
         <button className="w-12 h-12 bg-white rounded-2xl shadow-lg border border-gray-100 flex items-center justify-center text-gray-500 active:scale-95 transition-all">
           <span className="text-xl">⊕</span>
@@ -97,12 +86,8 @@ const MapView: React.FC<MapViewProps> = ({ facilities, appMode, onSelectFacility
         <button className="w-12 h-12 bg-white rounded-2xl shadow-lg border border-gray-100 flex items-center justify-center text-gray-500 active:scale-95 transition-all">
           <span className="text-xl">⊝</span>
         </button>
-        <button className="w-12 h-12 bg-white rounded-2xl shadow-lg border border-gray-100 flex items-center justify-center text-gray-500 active:scale-95 transition-all">
-          <MapPinIcon className="w-5 h-5" />
-        </button>
       </div>
 
-      {/* Facility Preview Card */}
       <div className={`absolute bottom-6 left-6 right-6 transition-all duration-500 transform ${
         selectedFacility ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0 pointer-events-none'
       }`}>
@@ -115,12 +100,7 @@ const MapView: React.FC<MapViewProps> = ({ facilities, appMode, onSelectFacility
               <img src={selectedFacility.imageUrl} alt="" className="w-full h-full object-cover" />
             </div>
             <div className="flex-1 min-w-0 flex flex-col justify-center">
-              <div className="flex justify-between items-start">
-                <h4 className="text-sm font-bold text-gray-900 truncate">{selectedFacility.name}</h4>
-                {selectedFacility.cleanlinessRating >= 4.0 && (
-                  <span className="material-symbols-outlined text-emerald-500 text-sm">auto_clean</span>
-                )}
-              </div>
+              <h4 className="text-sm font-bold text-gray-900 truncate">{selectedFacility.name}</h4>
               <p className="text-[10px] text-gray-400 font-medium uppercase tracking-tighter truncate mt-0.5">
                 {selectedFacility.type} {selectedFacility.floor ? `• ${selectedFacility.floor}` : ''} • {selectedFacility.address}
               </p>
@@ -138,15 +118,6 @@ const MapView: React.FC<MapViewProps> = ({ facilities, appMode, onSelectFacility
           </div>
         )}
       </div>
-
-      {/* Map Hint */}
-      {!activeMarker && (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-opacity duration-700 delay-300">
-          <div className="bg-white/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/40 shadow-sm flex items-center gap-2">
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Tap a Marker</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

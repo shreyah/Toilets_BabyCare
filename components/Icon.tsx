@@ -90,8 +90,7 @@ export const TypeIcon: React.FC<{ type: string; className?: string }> = ({ type,
       case 'Hotel': return 'hotel';
       case 'Restaurant': return 'restaurant';
       case 'Coffee Shop': return 'local_cafe';
-      case 'Airport': return 'flight';
-      case 'Train Station': return 'train';
+      case 'Transit Hub': return 'commute';
       case 'Eatery': return 'dining';
       case 'Park': return 'park';
       case 'Feeding Area': return 'breastfeeding';

@@ -23,7 +23,7 @@ const FacilityCard: React.FC<FacilityCardProps> = ({ facility, travelMode, appMo
     }
   };
 
-  const isHighlyClean = facility.cleanlinessRating >= 4.0;
+  const isCommercial = ['Restaurant', 'Hotel', 'Coffee Shop', 'Retail', 'Eatery'].includes(facility.type);
   const is24x7 = facility.openTime?.toLowerCase().includes('24/7');
 
   return (
@@ -56,6 +56,16 @@ const FacilityCard: React.FC<FacilityCardProps> = ({ facility, travelMode, appMo
             </div>
           </div>
           
+          {/* Quick Two Line Address */}
+          <div className="mt-1 leading-[1.3]">
+            <p className="text-[11px] font-semibold text-slate-600 truncate">
+              {facility.addressLine1 || (facility.shortAddress || facility.address).split(',')[0]}
+            </p>
+            <p className="text-[10px] font-medium text-slate-400 truncate">
+              {facility.addressLine2 || (facility.address).split(',').slice(1, 3).join(',')}
+            </p>
+          </div>
+
           <div className="flex items-center flex-wrap gap-2 mt-2">
             <div className="flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-100">
               <StarIcon className="w-3 h-3 text-amber-500 fill-amber-500" />
@@ -66,11 +76,11 @@ const FacilityCard: React.FC<FacilityCardProps> = ({ facility, travelMode, appMo
             </span>
           </div>
 
-          {/* Cleanliness Badge */}
-          {isHighlyClean && (
-            <div className="mt-2 flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-lg border border-emerald-100 w-fit">
-              <span className="material-symbols-outlined text-sm">temp_clean_hands</span>
-              <span className="text-[9px] font-black uppercase tracking-tighter">Recently Sanitized</span>
+          {/* Access Restriction Badge */}
+          {isCommercial && (
+            <div className="mt-2 flex items-center gap-1.5 bg-amber-50 text-amber-700 px-2 py-0.5 rounded-lg border border-amber-200 w-fit">
+              <span className="material-symbols-outlined text-sm">lock_person</span>
+              <span className="text-[9px] font-black uppercase tracking-tighter">For Customers Only</span>
             </div>
           )}
         </div>

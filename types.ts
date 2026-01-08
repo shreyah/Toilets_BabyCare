@@ -29,8 +29,7 @@ export type FacilityType =
   | 'Hotel' 
   | 'Restaurant'
   | 'Coffee Shop'
-  | 'Airport'
-  | 'Train Station'
+  | 'Transit Hub'
   | 'Eatery'
   | 'Park';
 
@@ -48,6 +47,9 @@ export interface Facility {
   name: string;
   type: FacilityType;
   address: string;
+  shortAddress: string; 
+  addressLine1: string; // Added for two-line quick info
+  addressLine2: string; // Added for two-line quick info
   distance: number; // in km
   rating: number; // 0-5
   cleanlinessRating: number; // 0-5
